@@ -1,0 +1,215 @@
+@import 'aos/dist/aos.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==== Navbar ==== */
+.navbar {
+  transition: background-color 0.3s ease, backdrop-filter 0.3s ease;
+}
+
+/* Fondo inicial */
+.navbar-default {
+  background-color: rgba(31, 31, 31, 0.9); /* gris oscuro sólido */
+}
+
+/* Fondo al hacer scroll */
+.navbar-scrolled {
+  background-color: rgba(31, 31, 31, 0.6); /* gris translúcido */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* Contenedor interno del navbar con más altura */
+.navbar-inner {
+  height: 80px; /* altura total del navbar */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ==== Enlaces del navbar ==== */
+.nav-link {
+  color: #fff; /* Blanco */
+  font-weight: 300;
+  font-size: 1.5rem;
+  padding: 0.75rem 1.85rem;
+  text-decoration: none;
+  transition:
+    color 0.3s ease,
+    background-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
+  border-radius: 30px;
+  top: 5px;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* ==== Iconos del footer ==== */
+.footer-icon-img {
+  width: 48px;
+  height: 48px;
+  display: inline-block;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.footer-icon-img:hover {
+  transform: scale(1.2) rotate(5deg);
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.6));
+}
+
+/* Contenedor de iconos del footer */
+.footer-icons {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  padding-right: 3rem;
+}
+
+/* ==== Animación de entrada del footer ==== */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.footer-appear {
+  animation: fade-up 0.8s ease-out forwards;
+}
+
+/* Animación de gradiente */
+@keyframes gradient-move {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ============================ */
+/* Clase global para el logo */
+.logo-rounded {
+  border-radius: 100%;   /* círculo perfecto */
+  height: 300px;          /* más chico */
+  width: 300px;           /* igual que height */
+  object-fit: cover;     /* evita deformaciones */
+  transition: transform 0.3s ease;
+  margin-top: 30px;     /* lo sube visualmente */
+}
+
+/* Glow blanco constante */
+.glow {
+  filter: drop-shadow(0 0 10px #ffffff) drop-shadow(0 0 20px #ffffff);
+  animation: glowPulse 2s infinite alternate;
+}
+
+@keyframes glowPulse {
+  from {
+    filter: drop-shadow(0 0 5px #ffffff) drop-shadow(0 0 10px #ffffff);
+  }
+  to {
+    filter: drop-shadow(0 0 20px #ffffff) drop-shadow(0 0 40px #ffffff);
+  }
+}
+
+.logo-rounded:hover {
+  transform: scale(1.05);
+}
+
+/* ==== Imágenes del carrusel ==== */
+.carousel-image {
+  width: 100%;
+  height: 20rem; /* h-80 */
+  object-fit: cover;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+  .carousel-image {
+    height: 16rem; /* h-64 */
+  }
+}
+.catalogo-img {
+  width: 100%;
+  aspect-ratio: 1 / 1; /* cuadrado perfecto */
+  object-fit: contain; /* muestra toda la imagen sin recortar */
+  background-color: #fff; /* fondo para las áreas vacías */
+  padding: 0.5rem; /* opcional, para que no toque los bordes */
+  border-radius: 0.5rem;
+}
+
+
+/* ============================ */
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow-x: hidden; /* Evita desplazamiento horizontal */
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+button:hover {
+  border-color: #646cff;
+}
+
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
