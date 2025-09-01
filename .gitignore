@@ -54,3 +54,8 @@ Thumbs.db
 *.swo
 .idea/
 .vscode/
+
+node_modules/
+.env
+dist/
+.vscode/

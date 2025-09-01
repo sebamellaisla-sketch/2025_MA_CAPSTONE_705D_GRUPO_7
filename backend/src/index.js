@@ -1,11 +1,9 @@
-// backend/server.js
 import dotenv from "dotenv";
-dotenv.config(); // ← Esto carga las variables de .env antes de todo
+dotenv.config();
 
-import app from "./src/app.js";
+import app from "./app.js";
 
 const PORT = process.env.PORT || 3000;
-
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
 });
