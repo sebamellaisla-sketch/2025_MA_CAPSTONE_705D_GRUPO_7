@@ -60,3 +60,13 @@ export const login = async (req, res) => {
     res.status(500).json({ error: "Error en el login" });
   }
 };
+
+export const getMe = async (req, res) => {
+  try {
+    const { id, role } = req.user;
+    res.json({ id, role });
+  } catch (error) {
+    console.error("Error en /me:", error);
+    res.status(500).json({ error: "Error al obtener usuario" });
+  }
+};
