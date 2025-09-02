@@ -1,10 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { Link } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const { user, loading } = useContext(AuthContext);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,12 +30,12 @@ export default function Navbar() {
   }, [lastScrollY]);
 
   const links = [
-    "Inicio",
-    "Productos",
-    "Servicio de Bordado",
-    "Confección",
-    "Asignación de Tallas",
-    "Cotizar",
+    { name: "Inicio", path: "/" },
+    { name: "Productos", path: "/categorias/1" }, // 🔹 Redirige a categorías
+    { name: "Servicio de Bordado", path: "#" },
+    { name: "Confección", path: "#" },
+    { name: "Asignación de Tallas", path: "#" },
+    { name: "Cotizar", path: "/cotiza" },
   ];
 
   return (
@@ -45,19 +48,18 @@ export default function Navbar() {
         className={`navbar ${isScrolled ? "navbar-scrolled" : "navbar-default"}`}
       >
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10">
-          {/* Usamos la clase navbar-inner para controlar altura desde index.css */}
-          <div className="navbar-inner space-x-8">
+          <div className="navbar-inner space-x-8 flex items-center">
             {links.map((item, idx) => (
-              <a
+              <Link
                 key={idx}
-                href="#"
+                to={item.path}
                 className="nav-link relative group opacity-0 animate-fade-in text-lg font-semibold"
                 style={{
                   animationDelay: `${idx * 150 + 400}ms`,
                   animationFillMode: "forwards",
                 }}
               >
-                <span>{item}</span>
+                <span>{item.name}</span>
                 <span
                   className="absolute left-0 -bottom-1 w-full h-0.5 
                   bg-gradient-to-r from-white via-gray-300 to-white
@@ -65,35 +67,17 @@ export default function Navbar() {
                   transition-all duration-300 
                   group-hover:animate-gradient-move"
                 ></span>
-              </a>
+              </Link>
             ))}
+
+            {!loading && user && (
+              <span className="ml-auto text-sm text-white">
+                {user.role === "admin" ? "Admin" : "Cliente"} #{user.id}
+              </span>
+            )}
           </div>
         </div>
       </nav>
-
-      <style>{`
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.6s ease-out forwards;
-        }
-        @keyframes gradient-move {
-          0% { background-position: 0% 0%; }
-          100% { background-position: 200% 0%; }
-        }
-        .animate-gradient-move {
-          animation: gradient-move 0.8s linear infinite;
-        }
-        @keyframes slide-down {
-          from { transform: translateY(-100%); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
-        }
-        .animate-slide-down {
-          animation: slide-down 0.6s ease-out forwards;
-        }
-      `}</style>
     </header>
   );
 }

@@ -5,16 +5,21 @@ import "./index.css";
 
 import App from "./App";
 import CategoriaPage from "./pages/CategoriaPage";
-import CotizacionPage from "./pages/CotizacionPage"; // nuevo formulario
+import CotizacionPage from "./pages/CotizacionPage";
+import { AuthProvider } from "./context/AuthContext";
 
-createRoot(document.getElementById("root")!).render(
+const rootElement = document.getElementById("root") as HTMLElement;
+
+createRoot(rootElement).render(
   <StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/categorias/:categoriaId" element={<CategoriaPage />} />
-        <Route path="/cotiza" element={<CotizacionPage />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="/categorias/:categoriaId" element={<CategoriaPage />} />
+          <Route path="/cotiza" element={<CotizacionPage />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   </StrictMode>
 );
