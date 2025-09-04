@@ -116,11 +116,11 @@
 /* Clase global para el logo */
 .logo-rounded {
   border-radius: 100%;   /* círculo perfecto */
-  height: 300px;          /* más chico */
-  width: 300px;           /* igual que height */
+  height: 300px;         /* más chico */
+  width: 300px;          /* igual que height */
   object-fit: cover;     /* evita deformaciones */
   transition: transform 0.3s ease;
-  margin-top: 30px;     /* lo sube visualmente */
+  margin-top: 30px;      /* lo sube visualmente */
 }
 
 /* Glow blanco constante */
@@ -156,6 +156,7 @@
     height: 16rem; /* h-64 */
   }
 }
+
 .catalogo-img {
   width: 100%;
   aspect-ratio: 1 / 1; /* cuadrado perfecto */
@@ -164,7 +165,6 @@
   padding: 0.5rem; /* opcional, para que no toque los bordes */
   border-radius: 0.5rem;
 }
-
 
 /* ============================ */
 
@@ -212,4 +212,49 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+/* ==== Animación slide-up para el carrito ==== */
+@keyframes slide-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+
+
+@media (max-width: 640px) {
+  /* En móviles, menos desplazamiento horizontal */
+  .cart-panel {
+    right: 1rem;
+  }
+}
+
+.cart-panel {
+  position: sticky;
+  top: 1rem; /* distancia desde arriba */
+}
+
+@keyframes slide-left {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-left {
+  animation: slide-left 0.3s ease-out;
 }

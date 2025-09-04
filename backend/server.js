@@ -1,11 +1,8 @@
 // backend/server.js
 import app from "./src/app.js";
 import dotenv from "dotenv";
-dotenv.config(); // ← Esto carga las variables de .env antes de todo
 
-import userRoutes from "./src/routes/user.routes.js";
-app.use("/api/auth", userRoutes);
-
+dotenv.config(); // Cargar variables de entorno
 
 const PORT = process.env.PORT || 3000;
 

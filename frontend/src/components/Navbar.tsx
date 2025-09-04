@@ -31,7 +31,7 @@ export default function Navbar() {
 
   const links = [
     { name: "Inicio", path: "/" },
-    { name: "Productos", path: "/categorias/1" }, // 🔹 Redirige a categorías
+    { name: "Productos", path: "/categorias/1" },
     { name: "Servicio de Bordado", path: "#" },
     { name: "Confección", path: "#" },
     { name: "Asignación de Tallas", path: "#" },
@@ -40,12 +40,14 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 w-full z-50 transition-transform duration-500 ${
+      className={`fixed top-0 left-0 w-full z-[9999] transition-transform duration-500 ${
         isMounted ? "animate-slide-down" : "opacity-0"
       } ${isVisible ? "translate-y-0" : "-translate-y-full"}`}
     >
       <nav
-        className={`navbar ${isScrolled ? "navbar-scrolled" : "navbar-default"}`}
+        className={`navbar ${
+          isScrolled ? "navbar-scrolled" : "navbar-default"
+        } text-white`} // 🔹 Forzamos texto blanco siempre
       >
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10">
           <div className="navbar-inner space-x-8 flex items-center">
@@ -53,11 +55,7 @@ export default function Navbar() {
               <Link
                 key={idx}
                 to={item.path}
-                className="nav-link relative group opacity-0 animate-fade-in text-lg font-semibold"
-                style={{
-                  animationDelay: `${idx * 150 + 400}ms`,
-                  animationFillMode: "forwards",
-                }}
+                className="nav-link relative group text-lg font-semibold text-white" // 🔹 quitamos opacity-0 y animación
               >
                 <span>{item.name}</span>
                 <span
