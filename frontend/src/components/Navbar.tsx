@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
 export default function Navbar() {
@@ -7,25 +7,32 @@ export default function Navbar() {
   const [isMounted, setIsMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const { user, loading } = useContext(AuthContext);
+
+  const auth = useContext(AuthContext);
+  const { user, loading } = auth || {};
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      if (auth?.logout) await auth.logout();
+      else {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      }
+    } finally {
+      navigate("/login", { replace: true });
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScroll = window.scrollY;
       setIsScrolled(currentScroll > 50);
-
-      if (currentScroll > lastScrollY && currentScroll > 100) {
-        setIsVisible(false);
-      } else {
-        setIsVisible(true);
-      }
-
+      setIsVisible(!(currentScroll > lastScrollY && currentScroll > 100));
       setLastScrollY(currentScroll);
     };
-
     window.addEventListener("scroll", handleScroll);
     setIsMounted(true);
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
@@ -64,15 +71,41 @@ export default function Navbar() {
                   bg-[length:200%_100%] 
                   transition-all duration-300 
                   group-hover:animate-gradient-move"
-                ></span>
+                />
               </Link>
             ))}
 
-            {!loading && user && (
-              <span className="ml-auto text-sm text-white">
-                {user.role === "admin" ? "Admin" : "Cliente"} #{user.id}
-              </span>
-            )}
+            <div className="ml-auto flex items-center gap-3">
+              {!loading && user ? (
+                <>
+                  <span className="text-sm text-white/80">
+                    {user.role === "admin" ? "Admin" : "Cliente"} #{String(user.id)}
+                  </span>
+                  <button
+                    onClick={handleLogout}
+                    className="px-3 py-1.5 rounded bg-white/15 hover:bg-white/25 transition"
+                    title="Cerrar sesión"
+                  >
+                    Cerrar sesión
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    className="px-3 py-1.5 rounded bg-white/15 hover:bg-white/25 transition"
+                  >
+                    Iniciar sesión
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="px-3 py-1.5 rounded bg-white text-black hover:bg-gray-100 transition"
+                  >
+                    Registrarse
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </nav>

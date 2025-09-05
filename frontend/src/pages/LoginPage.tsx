@@ -1,153 +1,116 @@
-import { useState, useContext, useEffect } from "react";
-import { useNavigate, Link, useSearchParams, useLocation } from "react-router-dom";
+import { useState, FormEvent, useContext } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { API_URL } from "../config/api";
 import { AuthContext } from "../context/AuthContext";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState("cliente@cliente.com");
+  const [password, setPassword] = useState("contraseña");
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const { setUser } = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const location = useLocation();
 
-  // Mostrar mensaje de éxito si viene del registro
-  useEffect(() => {
-    if (searchParams.get('registered') === 'true') {
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 5000);
-    }
-  }, [searchParams]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError("");
+    setError(null);
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:3000/api/auth/login", {
+      const resp = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        // Si tu backend usa cookie httpOnly para el token:
+        // credentials: "include",
+        body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
+      const data = await resp.json().catch(() => ({} as any));
 
-      if (!res.ok) {
-        setError(data.error || "Error al iniciar sesión");
-        return;
+      if (!resp.ok) {
+        const msg =
+          data?.error ||
+          data?.message ||
+          `HTTP ${resp.status} al conectar con /auth/login`;
+        throw new Error(msg);
       }
 
-      localStorage.setItem("token", data.token);
-      setUser({ id: data.id, role: data.role });
+      // soporta distintas formas de respuesta
+      const token = data?.token || data?.accessToken || "";
+      const u = data?.user || {
+        id: data?.id ?? data?.userId ?? "",
+        role: data?.role ?? "client",
+        email: data?.email ?? email,
+      };
 
-      // Redirigir según rol y origen
-      if (data.role === "admin") {
-        navigate("/admin");
-      } else {
-        // Para clientes, ir a checkout si venían del carrito, sino al home
-        const from = location.state?.from || "/checkout";
-        navigate(from, { replace: true });
+      if (login) login(token, u);
+      else {
+        if (token) localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(u));
       }
-    } catch (err) {
-      setError("Error de conexión con el servidor");
+
+      navigate("/", { replace: true });
+    } catch (err: any) {
+      console.error("LOGIN ERROR:", err);
+      setError(err.message || "Error de conexión con el servidor");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-6">
-      <div className="max-w-md w-full">
-        <button
-          onClick={() => navigate(-1)}
-          className="group mb-6 flex items-center space-x-2 text-white/80 hover:text-white transition-all duration-300"
-        >
-          <div className="p-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 group-hover:bg-white/20 transition-all duration-300">
-            <svg className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </div>
-          <span className="font-medium">Volver</span>
-        </button>
+    <main className="max-w-xl mx-auto p-6 mt-24">
+      <button onClick={() => navigate(-1)} className="mb-4 underline">Volver</button>
+      <h1 className="text-4xl font-extrabold mb-2">Iniciar sesión</h1>
+      <p className="mb-6 text-white/70">Accede a tu cuenta de TESTheb</p>
 
-        {showSuccess && (
-          <div className="mb-6 bg-green-500/20 border border-green-500/50 rounded-lg p-4 text-green-200 text-sm">
-            Cuenta creada exitosamente. Ahora puedes iniciar sesión.
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <label className="block">
+          <span className="block text-sm mb-1">Correo electrónico</span>
+          <input
+            type="email"
+            className="w-full rounded border px-3 py-2 bg-transparent"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="username"
+          />
+        </label>
+
+        <label className="block">
+          <span className="block text-sm mb-1">Contraseña</span>
+          <input
+            type="password"
+            className="w-full rounded border px-3 py-2 bg-transparent"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
+          />
+        </label>
+
+        {error && (
+          <div className="rounded border border-red-400 bg-red-50/10 text-red-300 p-2">
+            {error}
           </div>
         )}
 
-        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 shadow-2xl">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">Iniciar Sesión</h1>
-            <p className="text-white/70">Accede a tu cuenta de TESTheb</p>
-          </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-60"
+        >
+          {loading ? "Conectando..." : "Iniciar sesión"}
+        </button>
+      </form>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-white font-medium mb-2">
-                Correo electrónico
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/30 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
-                placeholder="tu@email.com"
-                required
-              />
-            </div>
+      <p className="mt-4">
+        ¿No tienes una cuenta?{" "}
+        <Link className="underline" to="/register">Regístrate aquí</Link>
+      </p>
 
-            <div>
-              <label className="block text-white font-medium mb-2">
-                Contraseña
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/30 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
-                placeholder="Tu contraseña"
-                required
-              />
-            </div>
-
-            {error && (
-              <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-3 text-red-200 text-sm">
-                {error}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 px-6 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-transparent transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-            >
-              {loading ? "Iniciando sesión..." : "Iniciar sesión"}
-            </button>
-          </form>
-
-          <div className="mt-8 text-center space-y-4">
-            <p className="text-white/70">
-              ¿No tienes una cuenta?{" "}
-              <Link 
-                to="/register" 
-                state={{ from: location.state?.from || "/checkout" }}
-                className="text-purple-300 hover:text-purple-200 font-semibold transition-colors duration-300"
-              >
-                Regístrate aquí
-              </Link>
-            </p>
-            
-            <div className="bg-blue-500/20 border border-blue-500/50 rounded-lg p-3 text-blue-200 text-xs">
-              <p className="font-semibold mb-1">Credenciales de prueba:</p>
-              <p>Admin: admin@testheb.cl / password</p>
-            </div>
-          </div>
-        </div>
+      <div className="mt-8 text-sm opacity-75">
+        <p>Credenciales de prueba:</p>
+        <p>Administrador: <b>admin@testheb.cl</b> / <b>contraseña</b></p>
       </div>
-    </div>
+    </main>
   );
 }

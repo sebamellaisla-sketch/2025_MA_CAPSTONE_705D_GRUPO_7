@@ -1,46 +1,53 @@
-import { createContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useMemo, useState, useEffect } from "react";
 
-type User = {
-  id: number;
-  role: string;
-} | null;
+type Role = "admin" | "client" | string;
+type User = { id: string | number; role: Role; email?: string } | null;
 
 type AuthContextType = {
   user: User;
-  setUser: (user: User) => void;
   loading: boolean;
+  logout: () => Promise<void>;
+  login: (token: string, u?: User) => void;
 };
 
 export const AuthContext = createContext<AuthContextType>({
   user: null,
-  setUser: () => {},
-  loading: true
+  loading: false,
+  logout: async () => {},
+  login: () => {},
 });
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User>(null);
-  const [loading, setLoading] = useState(true);
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User>(() => {
+    const raw = localStorage.getItem("user");
+    return raw ? JSON.parse(raw) : null;
+  });
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      fetch("http://localhost:3000/api/auth/me", {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-        .then(res => res.ok ? res.json() : null)
-        .then(data => {
-          if (data) setUser(data);
-          setLoading(false);
-        })
-        .catch(() => setLoading(false));
-    } else {
-      setLoading(false);
+  const login = (token: string, u?: User) => {
+    if (token) localStorage.setItem("token", token);
+    if (u) {
+      localStorage.setItem("user", JSON.stringify(u));
+      setUser(u);
     }
-  }, []);
+  };
 
-  return (
-    <AuthContext.Provider value={{ user, setUser, loading }}>
-      {children}
-    </AuthContext.Provider>
+  const logout = async () => {
+    try {
+      // si usas cookie httpOnly en el backend, puedes llamar:
+      // await fetch(`${API_URL}/auth/logout`, { method: "POST", credentials: "include" });
+    } catch {}
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+  };
+
+  const value = useMemo(
+    () => ({ user, loading, logout, login }),
+    [user, loading]
   );
-};
+
+  useEffect(() => {}, []);
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}

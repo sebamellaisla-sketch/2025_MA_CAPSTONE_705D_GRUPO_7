@@ -1,3 +1,4 @@
+// backend/src/routes/webpay.routes.js
 import { Router } from "express";
 import {
   createTransaction,
@@ -6,10 +7,11 @@ import {
 
 const router = Router();
 
-// /api/webpay/create
+// Crear transacción
 router.post("/create", createTransaction);
 
-// /api/webpay/commit (return_url)
+// Commit: acepta POST (flujo normal) y GET (refresh/volver)
 router.post("/commit", commitTransaction);
+router.get("/commit", commitTransaction);
 
 export default router;

@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
+import { CartContext } from "../context/CartContext";
 
 type TxResult = {
   status: string;
@@ -8,30 +9,49 @@ type TxResult = {
   authorizationCode?: string | null;
   paymentType?: string | null;
   responseCode?: string | null;
-  cardNumber?: string | null;
+  cardNumber?: string | null;            // últimos 4 (desde backend)
   installmentsNumber?: string | null;
 };
 
+const paymentTypeMap: Record<string, string> = {
+  VD: "Débito",
+  VP: "Prepago",
+  VN: "Crédito (sin cuotas)",
+  VC: "Crédito en cuotas",
+  SI: "3 cuotas sin interés",
+  S2: "2 cuotas sin interés",
+  NC: "N cuotas sin interés",
+};
+
+function formatCLP(v?: string | null) {
+  const n = Math.round(Number(v ?? 0));
+  return `$ ${n.toLocaleString("es-CL")}`;
+}
+
 export default function WebpayResultPage() {
-  const [searchParams] = useSearchParams();
+  const [sp] = useSearchParams();
+  const { clearCart } = useContext(CartContext);
   const [result, setResult] = useState<TxResult | null>(null);
+  const clearedRef = useRef(false);
 
   const params = useMemo(
     () => ({
-      status: searchParams.get("status") || "",
-      buyOrder: searchParams.get("buyOrder"),
-      amount: searchParams.get("amount"),
-      authorizationCode: searchParams.get("authorizationCode"),
-      paymentType: searchParams.get("paymentType"),
-      responseCode: searchParams.get("responseCode"),
-      cardNumber: searchParams.get("cardNumber"),
-      installmentsNumber: searchParams.get("installmentsNumber"),
+      status: sp.get("status") || "",
+      buyOrder: sp.get("buyOrder"),
+      amount: sp.get("amount"),
+      authorizationCode: sp.get("authorizationCode"),
+      paymentType: sp.get("paymentType"),
+      responseCode: sp.get("responseCode"),
+      cardNumber: sp.get("cardNumber"),
+      installmentsNumber: sp.get("installmentsNumber"),
     }),
-    [searchParams]
+    [sp]
   );
 
+  // Normaliza resultado desde query params
   useEffect(() => {
-    if (!params.status) {
+    const st = (params.status || "").toUpperCase();
+    if (!st) {
       setResult({
         status: "error",
         buyOrder: null,
@@ -47,64 +67,122 @@ export default function WebpayResultPage() {
     setResult(params as TxResult);
   }, [params]);
 
-  const ok =
-    (result?.status || "").toUpperCase() === "AUTHORIZED" ||
-    (result?.responseCode || "") === "0";
+  // Éxito si status=AUTHORIZED o responseCode=0
+  const isOk = useMemo(() => {
+    const st = (result?.status || "").toUpperCase();
+    const rc = String(result?.responseCode ?? "");
+    return st === "AUTHORIZED" || rc === "0";
+  }, [result]);
+
+  // Limpia carrito una sola vez si fue autorizado
+  useEffect(() => {
+    if (!result) return;
+    if (isOk && !clearedRef.current) {
+      clearedRef.current = true;
+      try {
+        clearCart();
+        // Limpia también cualquier “lastWebpay” que hayas guardado
+        sessionStorage.removeItem("lastWebpay");
+      } catch {}
+    }
+  }, [isOk, result, clearCart]);
+
+  // Helpers visuales
+  const maskedLast4 =
+    result?.cardNumber && result.cardNumber.trim()
+      ? `**** **** **** ${result.cardNumber}`
+      : "-";
+
+  const paymentTypeLabel =
+    (result?.paymentType && paymentTypeMap[result.paymentType]) ||
+    result?.paymentType ||
+    "-";
 
   return (
     <main className="max-w-2xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Resultado Webpay</h1>
+      <h1 className="text-3xl font-extrabold mb-4">Resultado Webpay</h1>
 
       {!result ? (
-        <p>Cargando resultado…</p>
-      ) : ok ? (
-        <div className="rounded border p-4 bg-green-50">
-          <h2 className="font-semibold text-green-700 mb-2">
-            ¡Pago autorizado!
-          </h2>
+        <div className="rounded border p-4 bg-neutral-900/30">Cargando…</div>
+      ) : isOk ? (
+        <div className="rounded border p-4 bg-green-50 text-green-900">
+          <h2 className="font-semibold text-lg mb-3">¡Pago autorizado!</h2>
           <ul className="space-y-1">
-            <li><b>Orden:</b> {result.buyOrder}</li>
-            <li><b>Monto:</b> {result.amount}</li>
-            <li><b>Código autorización:</b> {result.authorizationCode}</li>
-            <li><b>Tipo pago:</b> {result.paymentType}</li>
-            <li><b>Respuesta TBK:</b> {result.responseCode}</li>
-            <li><b>Tarjeta:</b> **** **** **** {result.cardNumber}</li>
-            {result.installmentsNumber && (
-              <li><b>Cuotas:</b> {result.installmentsNumber}</li>
+            <li>
+              <b>Orden:</b> {result.buyOrder}
+            </li>
+            <li>
+              <b>Monto:</b> {formatCLP(result.amount)}
+            </li>
+            <li>
+              <b>Código de autorización:</b> {result.authorizationCode || "-"}
+            </li>
+            <li>
+              <b>Tipo de pago:</b> {paymentTypeLabel}
+            </li>
+            <li>
+              <b>Respuesta TBK:</b> {result.responseCode ?? "-"}
+            </li>
+            <li>
+              <b>Tarjeta:</b> {maskedLast4}
+            </li>
+            {result.installmentsNumber && result.installmentsNumber !== "0" && (
+              <li>
+                <b>Cuotas:</b> {result.installmentsNumber}
+              </li>
             )}
           </ul>
 
-          <div className="mt-4">
-            <Link to="/" className="text-blue-600 underline">
+          <div className="mt-5 flex gap-4">
+            <Link to="/" className="text-blue-700 underline">
               Volver a la tienda
+            </Link>
+            <Link to="/categorias" className="text-blue-700 underline">
+              Seguir comprando
             </Link>
           </div>
         </div>
-      ) : result.status === "aborted" ? (
-        <div className="rounded border p-4 bg-yellow-50">
-          <h2 className="font-semibold text-yellow-700 mb-2">
+      ) : (result.status || "").toUpperCase() === "ABORTED" ? (
+        <div className="rounded border p-4 bg-yellow-50 text-yellow-900">
+          <h2 className="font-semibold text-lg mb-2">
             Pago cancelado por el usuario
           </h2>
-          <p>Orden: {result.buyOrder || "-"}</p>
-          <div className="mt-4">
-            <Link to="/checkout" className="text-blue-600 underline">
+          <p className="mb-2">
+            <b>Orden:</b> {result.buyOrder || "-"}
+          </p>
+          <div className="mt-4 flex gap-4">
+            <Link to="/checkout" className="text-blue-700 underline">
               Volver al checkout
+            </Link>
+            <Link to="/categorias" className="text-blue-700 underline">
+              Seguir comprando
             </Link>
           </div>
         </div>
       ) : (
-        <div className="rounded border p-4 bg-red-50">
-          <h2 className="font-semibold text-red-700 mb-2">
+        <div className="rounded border p-4 bg-red-50 text-red-900">
+          <h2 className="font-semibold text-lg mb-2">
             Pago rechazado o error
           </h2>
           <ul className="space-y-1">
-            <li><b>Orden:</b> {result.buyOrder}</li>
-            <li><b>Estado:</b> {result.status}</li>
-            {result.responseCode && <li><b>Respuesta TBK:</b> {result.responseCode}</li>}
+            <li>
+              <b>Orden:</b> {result.buyOrder || "-"}
+            </li>
+            <li>
+              <b>Estado:</b> {result.status}
+            </li>
+            {result.responseCode && (
+              <li>
+                <b>Respuesta TBK:</b> {result.responseCode}
+              </li>
+            )}
           </ul>
-          <div className="mt-4">
-            <Link to="/checkout" className="text-blue-600 underline">
-              Volver al checkout
+          <div className="mt-4 flex gap-4">
+            <Link to="/checkout" className="text-blue-700 underline">
+              Reintentar pago
+            </Link>
+            <Link to="/" className="text-blue-700 underline">
+              Volver a la tienda
             </Link>
           </div>
         </div>

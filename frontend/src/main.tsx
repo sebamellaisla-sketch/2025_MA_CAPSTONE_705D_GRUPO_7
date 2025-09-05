@@ -1,19 +1,22 @@
+// src/main.tsx
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import App from "./App";
 import CategoriaPage from "./pages/CategoriaPage";
 import CotizacionPage from "./pages/CotizacionPage";
 import AdminPanel from "./pages/AdminPanel";
 import LoginPage from "./pages/LoginPage";
 import ProductPage from "./pages/ProductPage";
-import "./index.css";
 import RegisterPage from "./pages/RegisterPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import WebpayResultPage from "./pages/WebpayResultPage";
+
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import ProtectedRoute from "./components/ProtectedRoute";
-import CheckoutPage from "./pages/CheckoutPage";
-import WebpayResultPage from "./pages/WebpayResultPage";
+
+import "./index.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -27,8 +30,21 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/cotiza" element={<CotizacionPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/productos" element={<ProductPage />} />
-            <Route path="/checkout" element={<CheckoutPage />} />
+
+            {/* Protegido: requiere sesión para pagar */}
+            <Route
+              path="/checkout"
+              element={
+                <ProtectedRoute>
+                  <CheckoutPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Resultado de Webpay (lo llama tu backend tras commit) */}
             <Route path="/webpay/result" element={<WebpayResultPage />} />
+
+            {/* Admin solo para role=admin */}
             <Route
               path="/admin"
               element={
@@ -37,6 +53,9 @@ createRoot(document.getElementById("root")!).render(
                 </ProtectedRoute>
               }
             />
+
+            {/* Rutas desconocidas → a inicio */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
       </CartProvider>
