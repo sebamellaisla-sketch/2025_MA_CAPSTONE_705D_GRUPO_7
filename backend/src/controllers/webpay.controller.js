@@ -1,90 +1,104 @@
 import pkg from "transbank-sdk";
-const { WebpayPlus, Options, IntegrationApiKeys, Environment, IntegrationCommerceCodes } = pkg;
+const {
+  WebpayPlus,
+  Options,
+  IntegrationApiKeys,
+  IntegrationCommerceCodes,
+  Environment,
+} = pkg;
 
-// Configurar Webpay para ambiente de integración (sandbox)
-const tx = new WebpayPlus.Transaction(new Options(
-  IntegrationCommerceCodes.WEBPAY_PLUS,
-  IntegrationApiKeys.WEBPAY,
-  Environment.Integration
-));
+function buildTx() {
+  const env = (process.env.WEBPAY_ENVIRONMENT || "integration").toLowerCase();
+
+  if (env === "integration") {
+    return new WebpayPlus.Transaction(
+      new Options(
+        IntegrationCommerceCodes.WEBPAY_PLUS,
+        IntegrationApiKeys.WEBPAY,
+        Environment.Integration
+      )
+    );
+  }
+
+  // Producción
+  const code = process.env.TBK_COMMERCE_CODE;
+  const apiKey = process.env.TBK_API_KEY;
+  if (!code || !apiKey) {
+    throw new Error("Faltan TBK_COMMERCE_CODE / TBK_API_KEY para producción");
+  }
+  return new WebpayPlus.Transaction(
+    new Options(code, apiKey, Environment.Production)
+  );
+}
+
+const tx = buildTx();
 
 export const createTransaction = async (req, res) => {
-  console.log("🔥 WEBPAY CREATE LLAMADO");
-
   try {
-    const { items, shipping_address, phone, notes, total } = req.body;
-    const user_id = req.user.id;
+    // Datos mínimos de ejemplo
+    const buyOrder = `O-${Date.now()}`;
+    const sessionId = `S-${Date.now()}`;
+    const amount = 12345; // CLP entero
 
-    if (!items || !Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ error: "El carrito está vacío" });
-    }
+    // IMPORTANTE: returnUrl debe ser del BACKEND
+    const returnUrl = `${process.env.BACKEND_URL}/api/webpay/commit`;
 
-    if (!shipping_address) {
-      return res.status(400).json({ error: "La dirección de envío es obligatoria" });
-    }
-
-    const buyOrder = `ORDER_${Date.now()}_${user_id}`;
-    const sessionId = `SESSION_${Date.now()}_${user_id}`;
-    const amount = Math.round(total);
-    const returnUrl = `${process.env.FRONTEND_URL || "http://localhost:5173"}/webpay/result`;
-
-    console.log("Parámetros:", { buyOrder, sessionId, amount, returnUrl });
-    
-    const response = await tx.create(buyOrder, sessionId, amount, returnUrl);
-    
-    console.log("Respuesta Webpay:", response);
-    
-    res.json({
-      token: response.token,
-      url: response.url,
-      buyOrder: buyOrder
-    });
-
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ error: "Error al procesar el pago" });
+    const r = await tx.create(buyOrder, sessionId, amount, returnUrl);
+    // r: { token, url }
+    return res.json({ token: r.token, url: r.url, buyOrder });
+  } catch (err) {
+    console.error("WEBPAY CREATE ERROR", err);
+    return res
+      .status(500)
+      .json({ error: "No se pudo crear la transacción Webpay" });
   }
 };
 
-export const confirmTransaction = async (req, res) => {
-  console.log("🔥 WEBPAY CONFIRM LLAMADO");
-
+export const commitTransaction = async (req, res) => {
   try {
-    const { token_ws } = req.body;
+    // Webpay POSTea aquí:
+    // - éxito: token_ws
+    // - cancelada: TBK_TOKEN + TBK_ORDEN_COMPRA
+    const { token_ws, TBK_TOKEN, TBK_ORDEN_COMPRA } = req.body;
+
+    if (TBK_TOKEN) {
+      const abortedQs = new URLSearchParams({
+        status: "aborted",
+        buyOrder: TBK_ORDEN_COMPRA || "",
+      }).toString();
+      return res.redirect(
+        302,
+        `${process.env.FRONTEND_URL}/webpay/result?${abortedQs}`
+      );
+    }
 
     if (!token_ws) {
-      return res.status(400).json({ error: "Token de transacción requerido" });
+      return res.status(400).send("Falta token_ws");
     }
 
-    const response = await tx.commit(token_ws);
-    
-    console.log("Respuesta de confirmación:", response);
+    const result = await tx.commit(token_ws);
 
-    if (response.status === "AUTHORIZED") {
-      res.json({
-        status: "success",
-        transaction: response
-      });
-    } else {
-      res.json({
-        status: "failed",
-        transaction: response
-      });
-    }
+    // Envía al front lo necesario para mostrar el resultado
+    const qs = new URLSearchParams({
+      status: String(result.status ?? ""),
+      buyOrder: String(result.buy_order ?? ""),
+      amount: String(result.amount ?? ""),
+      authorizationCode: String(result.authorization_code ?? ""),
+      paymentType: String(result.payment_type_code ?? ""),
+      responseCode: String(result.response_code ?? ""),
+      cardNumber: String(result.card_detail?.card_number ?? ""),
+      installmentsNumber: String(result.installments_number ?? ""),
+    }).toString();
 
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ error: "Error al confirmar transacción" });
-  }
-};
-
-export const getTransactionStatus = async (req, res) => {
-  try {
-    const { token } = req.params;
-    const response = await tx.status(token);
-    res.json(response);
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ error: "Error al obtener estado" });
+    return res.redirect(
+      302,
+      `${process.env.FRONTEND_URL}/webpay/result?${qs}`
+    );
+  } catch (err) {
+    console.error("WEBPAY COMMIT ERROR", err);
+    return res.redirect(
+      302,
+      `${process.env.FRONTEND_URL}/webpay/result?status=error`
+    );
   }
 };

@@ -1,11 +1,7 @@
-// backend/server.js
-import app from "./src/app.js";
-import dotenv from "dotenv";
+import "dotenv/config";
+import app from "./src/app.js"; // <-- antes decía "./app.js"
 
-dotenv.config(); // Cargar variables de entorno
-
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en puerto ${PORT}`);
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`API escuchando en http://localhost:${port}`);
 });
