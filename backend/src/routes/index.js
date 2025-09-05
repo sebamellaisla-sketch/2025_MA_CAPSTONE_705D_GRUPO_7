@@ -5,7 +5,7 @@ import productRoutes from "./product.routes.js";
 import categoryRoutes from "./category.routes.js";
 import quoteRoutes from "./quote.routes.js";
 // import orderRoutes from "./order.routes.js";
-
+import webpayRoutes from "./webpay.routes.js";
 const router = Router();
 
 router.use("/auth", userRoutes);
@@ -13,5 +13,6 @@ router.use("/products", productRoutes);
 router.use("/categories", categoryRoutes);
 router.use("/quotes", quoteRoutes);
 // router.use("/orders", orderRoutes);
+router.use("/webpay", webpayRoutes);
 
 export default router;

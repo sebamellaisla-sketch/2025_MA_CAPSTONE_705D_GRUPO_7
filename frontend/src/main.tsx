@@ -8,10 +8,12 @@ import AdminPanel from "./pages/AdminPanel";
 import LoginPage from "./pages/LoginPage";
 import ProductPage from "./pages/ProductPage";
 import "./index.css";
-
+import RegisterPage from "./pages/RegisterPage";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import CheckoutPage from "./pages/CheckoutPage";
+import WebpayResultPage from "./pages/WebpayResultPage";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -20,10 +22,13 @@ createRoot(document.getElementById("root")!).render(
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<App />} />
+            <Route path="/register" element={<RegisterPage />} />
             <Route path="/categorias" element={<CategoriaPage />} />
             <Route path="/cotiza" element={<CotizacionPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/productos" element={<ProductPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/webpay/result" element={<WebpayResultPage />} />
             <Route
               path="/admin"
               element={

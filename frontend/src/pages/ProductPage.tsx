@@ -17,12 +17,12 @@ export default function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 🔹 Ahora obtenemos total y totalItems directamente del contexto (ya calculados)
+  // Ahora obtenemos total y totalItems directamente del contexto (ya calculados)
   const { cart, addToCart, removeFromCart, clearCart, total, totalItems } = useContext(CartContext);
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // 🔹 Cargar productos desde la API
+  // Cargar productos desde la API
   useEffect(() => {
     fetch(`${API_URL}/products`)
       .then(res => {
@@ -35,8 +35,13 @@ export default function ProductPage() {
   }, []);
 
   const handleCheckout = () => {
-    if (!user) navigate("/login");
-    else navigate("/checkout");
+    if (!user) {
+      navigate("/login", { 
+        state: { from: "/checkout" }
+      });
+    } else {
+      navigate("/checkout");
+    }
   };
 
   if (loading) return <div className="p-6">Cargando productos...</div>;
@@ -87,7 +92,7 @@ export default function ProductPage() {
                   </p>
                   <button
                     onClick={() => {
-                      // 🔹 Asegurar que el precio sea un número
+                      // Asegurar que el precio sea un número
                       const priceAsNumber = typeof producto.price === 'string' 
                         ? parseFloat(producto.price) 
                         : producto.price;
