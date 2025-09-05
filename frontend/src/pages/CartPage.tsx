@@ -25,18 +25,18 @@ export const CartContext = createContext<CartContextType>({
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
 
-  // 🔹 Cargar desde localStorage
+  // Cargar desde localStorage
   useEffect(() => {
     const stored = localStorage.getItem("cart");
     if (stored) setCart(JSON.parse(stored));
   }, []);
 
-  // 🔹 Guardar en localStorage
+  // Guardar en localStorage
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
-  // ✅ Agregar producto o sumar cantidad
+  // Agregar producto o sumar cantidad
   const addToCart = (newItem: CartItem) => {
     setCart(prevCart => {
       const existing = prevCart.find(item => item.id === newItem.id);
@@ -51,12 +51,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  // ✅ Eliminar producto
+  // Eliminar producto
   const removeFromCart = (id: number) => {
     setCart(prevCart => prevCart.filter(item => item.id !== id));
   };
 
-  // ✅ Vaciar carrito
+  // Vaciar carrito
   const clearCart = () => {
     setCart([]);
   };

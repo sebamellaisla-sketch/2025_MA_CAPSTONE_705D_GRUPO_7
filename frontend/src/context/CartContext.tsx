@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useRef, ReactNode, useMemo } from "react";
+import { createContext, useState, useEffect, useRef, useMemo, ReactNode } from "react";
 
 type CartItem = {
   id: number;
@@ -29,7 +29,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const loadedRef = useRef(false);
 
-  // 🔥 CALCULAR TOTALES EN TIEMPO REAL
+  // CALCULAR TOTALES EN TIEMPO REAL
   const total = useMemo(() => {
     const calculatedTotal = cart.reduce((sum, item) => {
       const price = typeof item.price === 'string' ? parseFloat(item.price) : Number(item.price);
