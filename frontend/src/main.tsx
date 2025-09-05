@@ -6,11 +6,11 @@ import CategoriaPage from "./pages/CategoriaPage";
 import CotizacionPage from "./pages/CotizacionPage";
 import AdminPanel from "./pages/AdminPanel";
 import LoginPage from "./pages/LoginPage";
-import ProductPage from "./pages/ProductPage"; // ✅ nombre corregido
-import "./index.css"; // ⬅️ Esto carga Tailwind
+import ProductPage from "./pages/ProductPage";
+import "./index.css";
 
 import { AuthProvider } from "./context/AuthContext";
-import { CartProvider } from "./context/CartContext"; // ✅ versión optimizada con localStorage
+import { CartProvider } from "./context/CartContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 createRoot(document.getElementById("root")!).render(
@@ -20,10 +20,10 @@ createRoot(document.getElementById("root")!).render(
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<App />} />
-            <Route path="/categorias/:categoriaId" element={<CategoriaPage />} />
+            <Route path="/categorias" element={<CategoriaPage />} />
             <Route path="/cotiza" element={<CotizacionPage />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/productos" element={<ProductPage />} /> {/* ✅ ruta corregida */}
+            <Route path="/productos" element={<ProductPage />} />
             <Route
               path="/admin"
               element={

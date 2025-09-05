@@ -24,22 +24,19 @@
   transition: background-color 0.3s ease, backdrop-filter 0.3s ease;
 }
 
-/* Fondo inicial */
 .navbar-default {
-  background-color: rgba(31, 31, 31, 0.9); /* gris oscuro sólido */
+  background-color: rgba(31, 31, 31, 0.9);
 }
 
-/* Fondo al hacer scroll */
 .navbar-scrolled {
-  background-color: rgba(31, 31, 31, 0.6); /* gris translúcido */
+  background-color: rgba(31, 31, 31, 0.6);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
 }
 
-/* Contenedor interno del navbar con más altura */
 .navbar-inner {
-  height: 80px; /* altura total del navbar */
+  height: 80px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -47,7 +44,7 @@
 
 /* ==== Enlaces del navbar ==== */
 .nav-link {
-  color: #fff; /* Blanco */
+  color: #fff;
   font-weight: 300;
   font-size: 1.5rem;
   padding: 0.75rem 1.85rem;
@@ -81,7 +78,6 @@
   filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.6));
 }
 
-/* Contenedor de iconos del footer */
 .footer-icons {
   display: flex;
   gap: 1rem;
@@ -115,12 +111,12 @@
 /* ============================ */
 /* Clase global para el logo */
 .logo-rounded {
-  border-radius: 100%;   /* círculo perfecto */
-  height: 300px;         /* más chico */
-  width: 300px;          /* igual que height */
-  object-fit: cover;     /* evita deformaciones */
+  border-radius: 100%;
+  height: 300px;
+  width: 300px;
+  object-fit: cover;
   transition: transform 0.3s ease;
-  margin-top: 30px;      /* lo sube visualmente */
+  margin-top: 30px;
 }
 
 /* Glow blanco constante */
@@ -142,37 +138,21 @@
   transform: scale(1.05);
 }
 
-/* ==== Imágenes del carrusel ==== */
-.carousel-image {
-  width: 100%;
-  height: 20rem; /* h-80 */
-  object-fit: cover;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-@media (max-width: 768px) {
-  .carousel-image {
-    height: 16rem; /* h-64 */
-  }
-}
-
 .catalogo-img {
   width: 100%;
-  aspect-ratio: 1 / 1; /* cuadrado perfecto */
-  object-fit: contain; /* muestra toda la imagen sin recortar */
-  background-color: #fff; /* fondo para las áreas vacías */
-  padding: 0.5rem; /* opcional, para que no toque los bordes */
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  background-color: #fff;
+  padding: 0.5rem;
   border-radius: 0.5rem;
 }
 
 /* ============================ */
-
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  overflow-x: hidden; /* Evita desplazamiento horizontal */
+  overflow-x: hidden;
 }
 
 h1 {
@@ -230,10 +210,7 @@ button:focus-visible {
   animation: slide-up 0.3s ease-out;
 }
 
-
-
 @media (max-width: 640px) {
-  /* En móviles, menos desplazamiento horizontal */
   .cart-panel {
     right: 1rem;
   }
@@ -241,7 +218,7 @@ button:focus-visible {
 
 .cart-panel {
   position: sticky;
-  top: 1rem; /* distancia desde arriba */
+  top: 1rem;
 }
 
 @keyframes slide-left {
@@ -258,3 +235,40 @@ button:focus-visible {
 .animate-slide-left {
   animation: slide-left 0.3s ease-out;
 }
+
+/* ==== Clase global para botones (enlaces o button) ==== */
+
+@keyframes gradientHover {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+.btn {
+  display: inline-block;
+  border-radius: 9999px;
+  padding: 1.625rem 1.5rem; /* py-2.5 px-6 */
+  font-size: 1.5rem;
+  font-weight: 400;
+  font-family: inherit;
+  text-align: center;
+  text-decoration: none;
+  color: #fff;
+  background: linear-gradient(90deg, #4b4a4959, #575553, #f5f5f4);
+  background-size: 200% 200%;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 0 rgba(73, 66, 78, 0.6);
+  margin-top: 15px;
+  margin-bottom: 8px;  
+  margin-left: 90px;
+  margin-right: 90px;
+}
+
+.btn:hover {
+  animation: gradientHover 2s linear infinite;
+  background-position: 100% 50%;
+  color: #1f2937; /* gris oscuro */
+  box-shadow: 0 8px 20px rgba(250, 250, 248, 0.5);
+  transform: translateY(-4px) scale(1.05);
+  text-decoration: none;
+}
+

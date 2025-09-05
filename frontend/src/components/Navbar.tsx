@@ -31,7 +31,7 @@ export default function Navbar() {
 
   const links = [
     { name: "Inicio", path: "/" },
-    { name: "Productos", path: "/categorias/1" },
+    { name: "Productos", path: "/categorias" },
     { name: "Servicio de Bordado", path: "#" },
     { name: "Confección", path: "#" },
     { name: "Asignación de Tallas", path: "#" },
@@ -47,7 +47,7 @@ export default function Navbar() {
       <nav
         className={`navbar ${
           isScrolled ? "navbar-scrolled" : "navbar-default"
-        } text-white`} // 🔹 Forzamos texto blanco siempre
+        } text-white`}
       >
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10">
           <div className="navbar-inner space-x-8 flex items-center">
@@ -55,7 +55,7 @@ export default function Navbar() {
               <Link
                 key={idx}
                 to={item.path}
-                className="nav-link relative group text-lg font-semibold text-white" // 🔹 quitamos opacity-0 y animación
+                className="nav-link relative group text-lg font-semibold text-white"
               >
                 <span>{item.name}</span>
                 <span
