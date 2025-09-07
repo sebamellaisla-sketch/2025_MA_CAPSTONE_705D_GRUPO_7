@@ -33,34 +33,40 @@ export default function App() {
           className="relative z-10 max-w-3xl px-6 text-white flex flex-col items-center text-center"
           data-aos="fade-up"
         >
+          {/* Logo responsivo */}
           <img
             src={logo}
             alt="Testheb Logo"
-            className="logo-rounded glow mb-4 drop-shadow-lg"
+            className="logo-rounded glow mb-4 drop-shadow-lg w-32 sm:w-48 md:w-56 lg:w-72 h-auto transition-all duration-300"
           />
-
-          <h2
-            style={{ fontFamily: '"Playfair Display", serif' }}
-            className="text-4xl md:text-6xl mt-2 text-white drop-shadow-lg text-center"
-          >
-            Bordados TESTheb
-          </h2>
 
           <h1
             style={{ fontFamily: '"Playfair Display", serif' }}
-            className="text-4xl md:text-6xl mt-2 text-white drop-shadow-lg text-center"
+            className="text-3xl sm:text-4xl md:text-6xl mt-2 text-white drop-shadow-lg text-center"
+          >
+            Bordados TESTheb
+          </h1>
+
+          <h1
+            style={{ fontFamily: '"Playfair Display", serif' }}
+            className="text-2xl sm:text-4xl md:text-6xl mt-2 text-white drop-shadow-lg text-center"
           >
             Calidad y Precisión en Cada Puntada
           </h1>
+          <h2
+            style={{ fontFamily: '"Playfair Display", serif' }}
+            className="text-2xl sm:text-4xl md:text-6xl mt-2 text-white drop-shadow-lg text-center"
+          >
+            +569 78345612
+          </h2>
 
-          {/* Botón que lleva a cotización */}
+          {/* Botón premium unificado */}
           <a
             href="/cotiza"
-            className="mt-6 bg-white text-black px-6 py-3 rounded-full font-semibold hover:bg-gray-200 transition"
+            className="btn"
           >
             Contáctanos
           </a>
-          <p className="mt-4 text-sm">Tel. +56 9 3379 7489</p>
         </div>
       </section>
 

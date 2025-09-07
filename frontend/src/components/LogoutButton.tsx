@@ -1,33 +1,42 @@
 import { useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
+import { AuthContext } from "../context/AuthContext";
 
-export default function LogoutButton() {
+type Props = {
+  className?: string;
+  label?: string;
+};
+
+export default function LogoutButton({ className = "", label = "Cerrar sesión" }: Props) {
   const navigate = useNavigate();
+  const auth = useContext(AuthContext);
+  const [busy, setBusy] = useState(false);
 
   const handleLogout = async () => {
-    // (opcional) si tu backend tiene /api/auth/logout y usas cookies httpOnly:
-    // try {
-    //   await fetch(
-    //     `${import.meta.env.VITE_API_URL || "http://localhost:3000/api"}/auth/logout`,
-    //     { method: "POST", credentials: "include" }
-    //   );
-    // } catch {}
-
-    // Si usas JWT guardado en el front:
-    localStorage.removeItem("token");
-    localStorage.removeItem("user"); // quita esto si no lo usas
-
-    // Redirige al login (o a donde prefieras)
-    navigate("/login", { replace: true });
-    // Alternativa: window.location.href = "/login";
+    if (busy) return;
+    setBusy(true);
+    try {
+      if (auth?.logout) {
+        await auth.logout();
+      } else {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      }
+      navigate("/login", { replace: true });
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
     <button
+      type="button"
       onClick={handleLogout}
-      className="px-3 py-2 rounded bg-gray-200 hover:bg-gray-300"
-      title="Cerrar sesión"
+      className={`btn ${busy ? "opacity-60 pointer-events-none" : ""} ${className}`}
+      aria-label={label}
+      title={label}
     >
-      Cerrar sesión
+      {busy ? "Saliendo..." : label}
     </button>
   );
 }

@@ -20,8 +20,6 @@ export default function LoginPage() {
       const resp = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // Si tu backend usa cookie httpOnly para el token:
-        // credentials: "include",
         body: JSON.stringify({ email, password }),
       });
 
@@ -35,7 +33,6 @@ export default function LoginPage() {
         throw new Error(msg);
       }
 
-      // soporta distintas formas de respuesta
       const token = data?.token || data?.accessToken || "";
       const u = data?.user || {
         id: data?.id ?? data?.userId ?? "",
@@ -59,58 +56,77 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="max-w-xl mx-auto p-6 mt-24">
-      <button onClick={() => navigate(-1)} className="mb-4 underline">Volver</button>
-      <h1 className="text-4xl font-extrabold mb-2">Iniciar sesión</h1>
-      <p className="mb-6 text-white/70">Accede a tu cuenta de TESTheb</p>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <label className="block">
-          <span className="block text-sm mb-1">Correo electrónico</span>
-          <input
-            type="email"
-            className="w-full rounded border px-3 py-2 bg-transparent"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="username"
-          />
-        </label>
-
-        <label className="block">
-          <span className="block text-sm mb-1">Contraseña</span>
-          <input
-            type="password"
-            className="w-full rounded border px-3 py-2 bg-transparent"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
-          />
-        </label>
-
-        {error && (
-          <div className="rounded border border-red-400 bg-red-50/10 text-red-300 p-2">
-            {error}
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-6">
+      <div className="max-w-md w-full">
+        {/* Contenedor con efecto glass */}
+        <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 shadow-[0_8px_32px_rgba(0,0,0,0.6)]">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-white mb-2">Iniciar sesión</h1>
+            <p className="text-white/70">Accede a tu cuenta de TESTheb</p>
           </div>
-        )}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-60"
-        >
-          {loading ? "Conectando..." : "Iniciar sesión"}
-        </button>
-      </form>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-white font-medium mb-2">
+                Correo electrónico
+              </label>
+              <input
+                type="email"
+                className="w-full px-4 py-3 rounded-lg bg-white/10 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="username"
+              />
+            </div>
 
-      <p className="mt-4">
-        ¿No tienes una cuenta?{" "}
-        <Link className="underline" to="/register">Regístrate aquí</Link>
-      </p>
+            <div>
+              <label className="block text-white font-medium mb-2">
+                Contraseña
+              </label>
+              <input
+                type="password"
+                className="w-full px-4 py-3 rounded-lg bg-white/10 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+              />
+            </div>
 
-      <div className="mt-8 text-sm opacity-75">
-        <p>Credenciales de prueba:</p>
-        <p>Administrador: <b>admin@testheb.cl</b> / <b>contraseña</b></p>
+            {error && (
+              <div className="bg-red-500/20 rounded-lg p-3 text-red-200 text-sm">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 px-6 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold shadow-lg hover:shadow-pink-500/30 hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transform hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? "Conectando..." : "Iniciar sesión"}
+            </button>
+          </form>
+
+          <div className="mt-8 text-center">
+            <p className="text-white/70">
+              ¿No tienes una cuenta?{" "}
+              <Link 
+                className="text-purple-300 hover:text-purple-200 font-semibold transition-colors duration-300" 
+                to="/register"
+              >
+                Regístrate aquí
+              </Link>
+            </p>
+          </div>
+
+          <div className="mt-8 text-sm text-white/60">
+            <p>Credenciales de prueba:</p>
+            <p>Administrador: <b>admin@testheb.cl</b> / <b>password</b></p>
+            <p>Cliente: <b>cliente@cliente.com</b> / <b>cliente123</b></p>
+            <p>Asegúrate de encender la base de datos</p>
+          </div>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }

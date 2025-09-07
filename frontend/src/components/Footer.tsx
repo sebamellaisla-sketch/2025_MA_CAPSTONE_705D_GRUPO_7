@@ -1,7 +1,28 @@
-import instagramIcon from "../assets/icons/instagram.png";
-import whatsappIcon from "../assets/icons/whatsapp.png";
+import { FaInstagram, FaWhatsapp, FaTiktok, FaFacebook } from "react-icons/fa";
 
 export default function Footer() {
+  const handleInstagramClick = () => {
+    const instagramUrl = "https://www.instagram.com/pancho.ing?igsh=MWRpNTZxNzJ2cmZrbw==";
+    window.open(instagramUrl, '_blank');
+  };
+
+  const handleFacebookClick = () => {
+    const facebookUrl = "https://www.facebook.com/share/1G3PLmwCSM/?mibextid=wwXIfr";
+    window.open(facebookUrl, '_blank');
+  };
+
+  const handleTikTokClick = () => {
+    const tiktokUrl = "https://www.tiktok.com/@panchoeling?_t=ZM-8zX8oQLPUNp&_r=1";
+    window.open(tiktokUrl, '_blank');
+  };
+
+  const handleWhatsAppClick = () => {
+    const phoneNumber = "56945432006";
+    const message = "Hola, me interesa conocer más sobre sus servicios de bordado.";
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   return (
     <footer 
       className="text-gray-300 border-t-2 border-[#facc15] footer-appear" 
@@ -21,36 +42,47 @@ export default function Footer() {
               Bordados y confección con sello chileno.
             </p>
           </div>
-
+          
           {/* Columna 2 */}
-          <div>
-            <h3 className="text-sm font-semibold text-white tracking-wider uppercase mb-4">
-              Enlaces
-            </h3>
-            <ul className="space-y-2">
-              {["Inicio", "Productos", "Servicio de Bordado", "Confección", "Cotizar"].map((link, idx) => (
-                <li key={idx}>
-                  <a href="#" className="footer-link">{link}</a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Columna 3 */}
           <div>
             <h3 className="text-sm font-semibold text-white tracking-wider uppercase mb-4">
               Contacto
             </h3>
-            <p className="text-sm">Tel: +56 9 3379 7489</p>
+            <p className="text-sm">Tel: +56 9 4543 2006</p>
             <p className="text-sm">Email: contacto@bordadostestheb.cl</p>
             <p className="text-sm">Maipú, Santiago - Chile</p>
             <div className="footer-icons">
-              <a href="#" aria-label="Instagram">
-                <img src={instagramIcon} alt="Instagram" className="footer-icon-img" />
-              </a>
-              <a href="#" aria-label="WhatsApp">
-                <img src={whatsappIcon} alt="WhatsApp" className="footer-icon-img" />
-              </a>
+              <button 
+                onClick={handleInstagramClick}
+                aria-label="Instagram"
+                className="border-none bg-transparent p-0 cursor-pointer"
+              >
+                <FaInstagram className="w-16 h-16 text-white hover:scale-120 hover:rotate-5 transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+              </button>
+              
+              <button 
+                onClick={handleFacebookClick}
+                aria-label="Facebook"
+                className="border-none bg-transparent p-0 cursor-pointer"
+              >
+                <FaFacebook className="w-16 h-16 text-white hover:scale-120 hover:rotate-5 transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+              </button>
+              
+              <button 
+                onClick={handleTikTokClick}
+                aria-label="TikTok"
+                className="border-none bg-transparent p-0 cursor-pointer"
+              >
+                <FaTiktok className="w-16 h-16 text-white hover:scale-120 hover:rotate-5 transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+              </button>
+              
+              <button 
+                onClick={handleWhatsAppClick}
+                aria-label="WhatsApp"
+                className="border-none bg-transparent p-0 cursor-pointer"
+              >
+                <FaWhatsapp className="w-16 h-16 text-white hover:scale-120 hover:rotate-5 transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+              </button>
             </div>
           </div>
 
