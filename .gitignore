@@ -1,0 +1,56 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build output
+dist/
+build/
+.tmp/
+.temp/
+
+# Vite
+.vite/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Supabase
+.supabase/
+supabase/.temp/
+supabase/migrations/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Logs
+*.log
+
+# TypeScript
+*.tsbuildinfo
+
+# Coverage
+coverage/
+*.lcov
+
+# Git repo embebido (como el que tuviste)
+2025_MA_CAPSTONE_705D_GRUPO_7/
+
+# Optional: ignore frontend build artifacts
+frontend/dist/
+frontend/.vite/
+
+# Optional: ignore backend build artifacts
+backend/dist/
+backend/.temp/
