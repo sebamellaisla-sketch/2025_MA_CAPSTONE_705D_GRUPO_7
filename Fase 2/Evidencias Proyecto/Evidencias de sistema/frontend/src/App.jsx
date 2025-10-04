@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+﻿import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import { AuthProvider } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
@@ -11,6 +11,7 @@ import CartPage from './pages/CartPage'
 import CheckoutPage from './pages/CheckoutPage'
 import PaymentReturnPage from './pages/PaymentReturnPage'
 import PaymentResultPage from './pages/PaymentResultPage'
+import ContactPage from './pages/ContactPage'
 import AdminDashboard from './pages/AdminDashboard'
 import LoginPage from './pages/LoginPage'
 import PageTransition from './components/PageTransition'
@@ -73,7 +74,14 @@ const AnimatedRoutes = () => {
             </PageTransition>
           )}
         />
-        <Route path="/contact" element={<PlaceholderPage title="Contacto" />} />
+        <Route
+          path="/contact"
+          element={(
+            <PageTransition>
+              <ContactPage />
+            </PageTransition>
+          )}
+        />
         <Route
           path="/login"
           element={(

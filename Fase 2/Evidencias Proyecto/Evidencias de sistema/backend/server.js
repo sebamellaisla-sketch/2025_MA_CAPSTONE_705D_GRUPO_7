@@ -48,7 +48,7 @@ app.get('/api/health', (req, res) => {
     message: 'TESTheb API funcionando correctamente ✅',
     timestamp: new Date().toISOString(),
     version: '1.0.0',
-    database: 'bordados_testheb'
+    database: 'Base_Data_TesTheb'
   })
 })
 
@@ -59,7 +59,7 @@ app.get('/api/test-db', async (req, res) => {
     res.json({
       success: true,
       message: 'Conexión a PostgreSQL exitosa ✅',
-      database: 'bordados_testheb',
+      database: 'Base_Data_TesTheb',
       timestamp: result.rows[0].current_time,
       postgresql_version: result.rows[0].pg_version
     })
@@ -258,7 +258,7 @@ app.get('/api/setup/create-admin', async (req, res) => {
 
     // Hash de la contraseña "admin123"
     const saltRounds = 12
-    const hashedPassword = await bcrypt.default.hash('admin123', saltRounds)
+    const hashedPassword = await bcrypt.default.hash('Admin1', saltRounds)
 
     // Crear nuevo admin
     const insertAdminQuery = `
@@ -278,7 +278,7 @@ app.get('/api/setup/create-admin', async (req, res) => {
       success: true,
       message: 'Admin creado exitosamente ✅',
       admin: adminResult.rows[0],
-      password: 'admin123'
+      password: 'Admin1'
     })
   } catch (error) {
     logger.error('Error creando admin:', error)
@@ -471,7 +471,7 @@ app.get('/api/debug/all-tables', async (req, res) => {
     res.json({
       success: true,
       message: 'Estructura completa de la base de datos',
-      database: 'bordados_testheb',
+      database: 'Base_Data_TesTheb',
       tables
     })
   } catch (error) {
